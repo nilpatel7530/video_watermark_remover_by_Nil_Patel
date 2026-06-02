@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Watermark Remover by SNP Solutions</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="glow-bg-orb orb-1"></div>
+    <div class="glow-bg-orb orb-2"></div>
+    <div class="glow-bg-orb orb-3"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        <path d="M7 10h.01"></path>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Video Watermark Remover</h1>
+                    <p class="brand-signature">by SNP Solutions</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <div class="header-badge">
+                    <span class="badge-dot"></span>
+                    <span>FFmpeg Engine Active</span>
+                </div>
+                <div id="user-profile-widget" class="user-profile-widget" style="display: none;">
+                    <span class="user-avatar">👤</span>
+                    <span id="user-display-name" class="user-display-name">Guest</span>
+                    <button id="logout-btn" class="btn btn-secondary btn-xs" style="padding: 0.35rem 0.65rem; font-size: 0.7rem; border-radius: 6px;">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Left Sidebar: Folder Scan & Video List -->
+            <section class="panel panel-left scrollable">
+                <div class="panel-section">
+                    <h2 class="section-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        Source Directory
+                    </h2>
+                    <div class="input-group">
+                        <div style="display: flex; gap: 0.5rem; width: 100%;">
+                            <input type="text" id="dir-path-input" placeholder="e.g. C:\Users\Nilpa\Videos" value="C:\Users\Nilpa" style="flex-grow: 1; width: 0;">
+                            <button id="browse-dir-btn" class="btn btn-secondary" title="Browse Folder" style="padding: 0 0.8rem;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 0.4rem; width: 100%;">
+                            <button id="scan-dir-btn" class="btn btn-primary" style="flex: 1; padding: 0.55rem 0.5rem; font-size: 0.75rem;">
+                                <span>Scan Folder</span>
+                            </button>
+                            <button id="select-files-btn" class="btn btn-secondary" style="flex: 1; padding: 0.55rem 0.5rem; font-size: 0.75rem;">
+                                <span>Select Files</span>
+                            </button>
+                            <button id="clear-list-btn" class="btn btn-secondary" title="Clear List" style="padding: 0.55rem 0.7rem;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sleek Web Uploader Drop Zone -->
+                    <div class="web-upload-container mt-3">
+                        <div id="drop-zone" class="drop-zone">
+                            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <p class="upload-title">Drag & Drop Video</p>
+                            <p class="upload-subtitle">or click to upload</p>
+                            <input type="file" id="web-file-input" accept="video/*" style="display: none;">
+                        </div>
+                        <div id="upload-progress-container" class="upload-progress-container" style="display: none;">
+                            <div class="upload-progress-header">
+                                <span class="upload-filename" id="upload-filename">video.mp4</span>
+                                <span id="upload-pct">0%</span>
+                            </div>
+                            <div class="progress-bar-track-small">
+                                <div id="upload-progress-fill" class="upload-progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section flex-grow">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                            Detected Videos (<span id="video-count">0</span>)
+                        </h2>
+                    </div>
+                    <div class="video-list-container">
+                        <div id="video-list-empty" class="empty-state">
+                            <p>Enter a folder path and scan to locate videos</p>
+                        </div>
+                        <ul id="video-list" class="video-list"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Panel: Live Visual Editor -->
+            <section class="panel panel-center">
+                <div class="video-workspace">
+                    <div class="workspace-header">
+                        <div class="active-video-details">
+                            <span id="active-video-name">No Video Selected</span>
+                            <span id="active-video-resolution" class="badge-info">--x--</span>
+                        </div>
+                        <div class="editor-hint">
+                            <span>Drag directly on video to select watermark region</span>
+                        </div>
+                    </div>
+
+                    <!-- Video Container + Canvas Overlay -->
+                    <div class="video-editor-container">
+                        <div class="video-wrapper" id="video-wrapper">
+                            <video id="editor-video" preload="auto" playsinline muted controls style="display: none;"></video>
+                            <canvas id="overlay-canvas"></canvas>
+                            <div id="canvas-placeholder" class="canvas-placeholder">
+                                <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                                </svg>
+                                <h3>Select a video from the sidebar to begin editing</h3>
+                                <p>You'll be able to crop out or blur the watermark visually</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Controls Overlay -->
+                    <div class="custom-video-controls" style="display: none;">
+                        <button id="video-play-btn" class="control-btn" title="Play / Pause">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        </button>
+                        <div class="time-progress">
+                            <span id="current-time">0:00</span>
+                            <div class="progress-bar-track">
+                                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                            </div>
+                            <span id="total-time">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Sidebar: Configuration, Processing & Output Logs -->
+            <section class="panel panel-right scrollable">
+                <div class="panel-section">
+                    <h2 class="section-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        Clean Settings
+                    </h2>
+                    
+                    <!-- Watermark Action Toggles -->
+                    <div class="control-row">
+                        <label>Watermark Action</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-action="erase">Smart Erase</button>
+                            <button class="toggle-btn" data-action="blur">Blur Area</button>
+                            <button class="toggle-btn" data-action="crop">Crop Out</button>
+                            <button class="toggle-btn" data-action="none">Keep</button>
+                        </div>
+                    </div>
+
+                    <!-- Watermark Presets -->
+                    <div id="presets-row" class="control-row">
+                        <label>Quick Area Presets</label>
+                        <div class="presets-grid">
+                            <button class="btn btn-secondary btn-sm" onclick="setPreset('top-left')">Top-Left</button>
+                            <button class="btn btn-secondary btn-sm" onclick="setPreset('top-right')">Top-Right</button>
+                            <button class="btn btn-secondary btn-sm" onclick="setPreset('bottom')">Bottom Center</button>
+                            <button class="btn btn-secondary btn-sm" onclick="clearWatermarkSelection()">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Intro Trim Slider -->
+                    <div class="control-row">
+                        <div class="row-header">
+                            <label>Trim Intro Screen</label>
+                            <span id="intro-trim-val-display" class="highlight">0.0s</span>
+                        </div>
+                        <input type="range" id="intro-trim-slider" min="0" max="10" step="0.5" value="0.0">
+                        <div class="presets-grid mt-2">
+                            <button class="btn btn-secondary btn-xs" onclick="setIntroTrim(0)">None</button>
+                            <button class="btn btn-secondary btn-xs" onclick="setIntroTrim(1.5)">1.5s</button>
+                            <button class="btn btn-secondary btn-xs" onclick="setIntroTrim(3.0)">3.0s</button>
+                        </div>
+                    </div>
+
+                    <!-- Outro Trim Slider -->
+                    <div class="control-row">
+                        <div class="row-header">
+                            <label>Trim Outro Screen</label>
+                            <span id="trim-val-display" class="highlight">3.0s</span>
+                        </div>
+                        <input type="range" id="trim-slider" min="0" max="10" step="0.5" value="3.0">
+                        <div class="presets-grid mt-2">
+                            <button class="btn btn-secondary btn-xs" onclick="setTrim(0)">None</button>
+                            <button class="btn btn-secondary btn-xs" onclick="setTrim(3.0)">3.0s (Vizard)</button>
+                            <button class="btn btn-secondary btn-xs" onclick="setTrim(5.0)">5.0s</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Outro End Screen Configuration -->
+                    <div class="control-row">
+                        <div class="row-header" style="align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;" for="end-screen-toggle">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                                Custom Outro Screen
+                            </label>
+                            <label class="switch-premium">
+                                <input type="checkbox" id="end-screen-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                        
+                        <div id="end-screen-config-fields" style="display: none; flex-direction: column; gap: 0.8rem; margin-top: 0.4rem;">
+                            <!-- Drop Zone for Custom End Screen Upload -->
+                            <div class="drop-zone" id="end-screen-drop-zone" style="padding: 1.2rem 0.5rem; border-style: dashed; border-width: 1.5px; border-color: rgba(15, 23, 42, 0.12);">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                <p class="upload-title" style="font-size: 0.75rem;">Upload Outro Image/Video</p>
+                                <p class="upload-subtitle" style="font-size: 0.65rem; margin: 0;">Drop here or click to browse</p>
+                                <input type="file" id="end-screen-file-input" accept="image/*,video/*" style="display: none;">
+                            </div>
+                            
+                            <!-- Thumbnail Preview -->
+                            <div id="end-screen-preview-container" class="preview-container-premium" style="display: none;">
+                                <div class="preview-card-premium" style="background: rgba(15, 23, 42, 0.04); border: 1px solid var(--panel-border); border-radius: 8px; padding: 0.4rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                                    <div id="end-screen-media-preview" class="media-preview-box" style="font-size: 0.72rem; color: var(--text-secondary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 180px;">No file selected</div>
+                                    <button id="end-screen-remove-btn" class="btn btn-secondary btn-xs" style="padding: 0.2rem 0.4rem; font-size: 0.65rem; border-radius: 4px; color: var(--crimson);">Remove</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Duration Slider -->
+                            <div id="end-screen-duration-row">
+                                <div class="row-header">
+                                    <label style="font-size: 0.75rem; color: var(--text-muted);">Display Duration</label>
+                                    <span id="end-screen-duration-val" class="highlight" style="font-size: 0.78rem;">3.0s</span>
+                                </div>
+                                <input type="range" id="end-screen-duration-slider" min="1.0" max="10.0" step="0.5" value="3.0" style="height: 4px; margin-top: 0.2rem;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Run Operations -->
+                <div class="panel-section">
+                    <div class="action-buttons">
+                        <button id="clean-single-btn" class="btn btn-accent btn-large" disabled>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            <span>Clean Active Video</span>
+                        </button>
+                        <button id="clean-batch-btn" class="btn btn-primary btn-large" disabled>
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line><line x1="12" y1="12" x2="12" y2="18"></line></svg>
+                            <span>Clean All (Batch Mode)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress & Live Terminal Logs -->
+                <div class="panel-section flex-grow">
+                    <h2 class="section-title">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                        Processing Status
+                    </h2>
+
+                    <!-- Beautiful circular / linear status tracker -->
+                    <div class="progress-panel">
+                        <div class="progress-header">
+                            <span id="progress-status-text">Ready to process</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar-track-large">
+                            <div id="progress-bar-fill-large" class="progress-bar-fill-large"></div>
+                        </div>
+                    </div>
+
+                    <!-- Console terminal output box -->
+                    <div class="console-wrapper">
+                        <div class="console-header">
+                            <span>FFmpeg Console logs</span>
+                            <button id="clear-logs-btn" title="Clear Console">✕</button>
+                        </div>
+                        <div id="console-logs" class="console-logs">
+                            <div class="log-line system">Vizard Video Cleaner initialized.</div>
+                            <div class="log-line system">System ready. Select folder to scan video assets.</div>
+                        </div>
+                    </div>
+
+                    <!-- Output action buttons -->
+                    <div id="success-actions" class="output-actions-row" style="display: none;">
+                        <button id="open-out-dir-btn" class="btn btn-secondary flex-grow" title="Show Cleaned Video in Explorer">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            <span>Open Local Folder</span>
+                        </button>
+                        <a id="download-clean-btn" class="btn btn-accent flex-grow" style="text-decoration: none; text-align: center; display: inline-flex; justify-content: center; align-items: center; gap: 0.5rem;" href="#" download>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>Download Video</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Beautiful Glassmorphic SaaS Auth Portal Screen -->
+    <div id="auth-overlay" class="activation-overlay" style="display: none;">
+        <div class="activation-card auth-card">
+            <div class="activation-logo">
+                <div class="logo-icon-large">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        <path d="M7 10h.01"></path>
+                    </svg>
+                </div>
+                <h2>Video Watermark Remover</h2>
+                <p>Repurpose video assets, trim sponsored cards, and clear watermarks instantly.</p>
+            </div>
+            
+            <!-- Auth Form Selector Tabs -->
+            <div class="auth-tabs">
+                <button id="tab-login-btn" class="auth-tab active">Sign In</button>
+                <button id="tab-register-btn" class="auth-tab">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form-panel" class="auth-form-panel">
+                <div class="activation-input-group">
+                    <label for="login-username">Username / ID</label>
+                    <div class="premium-input-wrapper">
+                        <span class="premium-input-icon">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </span>
+                        <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username">
+                    </div>
+                </div>
+                <div class="activation-input-group">
+                    <label for="login-password">Password</label>
+                    <div class="premium-input-wrapper">
+                        <span class="premium-input-icon">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </span>
+                        <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password">
+                        <button class="premium-password-toggle-btn" type="button" tabindex="-1">
+                            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+                <button id="submit-login-btn" class="btn btn-accent btn-large">Sign In to Account</button>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="register-form-panel" class="auth-form-panel" style="display: none;">
+                <div class="activation-input-group">
+                    <label for="register-username">Choose Username</label>
+                    <div class="premium-input-wrapper">
+                        <span class="premium-input-icon">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </span>
+                        <input type="text" id="register-username" placeholder="e.g. nilpatel" autocomplete="username">
+                    </div>
+                </div>
+                <div class="activation-input-group">
+                    <label for="register-password">Password</label>
+                    <div class="premium-input-wrapper">
+                        <span class="premium-input-icon">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </span>
+                        <input type="password" id="register-password" placeholder="Min. 6 characters" autocomplete="new-password">
+                        <button class="premium-password-toggle-btn" type="button" tabindex="-1">
+                            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="activation-input-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <div class="premium-input-wrapper">
+                        <span class="premium-input-icon">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </span>
+                        <input type="password" id="register-confirm-password" placeholder="Re-enter password" autocomplete="new-password">
+                        <button class="premium-password-toggle-btn" type="button" tabindex="-1">
+                            <svg class="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+                <button id="submit-register-btn" class="btn btn-primary btn-large">Create Account</button>
+            </div>
+
+            <div id="auth-error" class="activation-status error" style="display: none;"></div>
+            <div id="auth-success" class="activation-status success" style="display: none;"></div>
+            
+            <div class="activation-footer">
+                <p>Secured by SNP Solutions SaaS Auth Platform. SQLite Database Active.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
